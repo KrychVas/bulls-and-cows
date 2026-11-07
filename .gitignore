@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+_site/
+.npm-cache/
+.husky/_/
+*.log
+.DS_Store
