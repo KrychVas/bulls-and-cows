@@ -83,7 +83,16 @@ export const createFooter = (year: number = new Date().getFullYear()): HTMLEleme
           attrs: { datetime: String(year) },
           text: String(year),
         }),
-        ' Vasyl Krychfalushii',
+        ' · Made by ',
+        el('a', {
+          className: 'footer-inline-link',
+          text: 'Vasyl Krychfalushii',
+          attrs: {
+            href: 'https://github.com/KrychVas',
+            target: '_blank',
+            rel: 'noreferrer noopener',
+          },
+        }),
       ]),
       el('p', {
         className: 'footer-note',

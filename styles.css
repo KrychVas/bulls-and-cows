@@ -1136,6 +1136,27 @@ ul {
   margin: 0;
 }
 
+.footer-note {
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.footer-inline-link {
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.footer-inline-link:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
 @keyframes reveal {
   from {
     opacity: 0;
