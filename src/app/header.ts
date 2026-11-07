@@ -39,43 +39,6 @@ export const createFooter = (year: number = new Date().getFullYear()): HTMLEleme
       }),
     ]),
 
-    el(
-      'nav',
-      {
-        className: 'footer-links',
-        attrs: { 'aria-label': 'Project links' },
-      },
-      [
-        el('a', {
-          className: 'footer-link',
-          text: 'GitHub · KrychVas',
-          attrs: {
-            href: 'https://github.com/KrychVas',
-            target: '_blank',
-            rel: 'noreferrer noopener',
-          },
-        }),
-        el('a', {
-          className: 'footer-link',
-          text: 'Source code',
-          attrs: {
-            href: 'https://github.com/KrychVas/bulls-and-cows',
-            target: '_blank',
-            rel: 'noreferrer noopener',
-          },
-        }),
-        el('a', {
-          className: 'footer-link',
-          text: 'RS School',
-          attrs: {
-            href: 'https://rs.school/',
-            target: '_blank',
-            rel: 'noreferrer noopener',
-          },
-        }),
-      ],
-    ),
-
     el('div', { className: 'footer-bottom' }, [
       el('p', { className: 'footer-copyright' }, [
         '© ',
@@ -83,20 +46,40 @@ export const createFooter = (year: number = new Date().getFullYear()): HTMLEleme
           attrs: { datetime: String(year) },
           text: String(year),
         }),
-        ' · Made by ',
-        el('a', {
-          className: 'footer-inline-link',
-          text: 'Vasyl Krychfalushii',
-          attrs: {
-            href: 'https://github.com/KrychVas',
-            target: '_blank',
-            rel: 'noreferrer noopener',
-          },
-        }),
+        ' · Made by Vasyl Krychfalushii',
       ]),
-      el('p', {
-        className: 'footer-note',
-        text: 'Built with pure functions, TypeScript, and TDD.',
-      }),
+
+      el(
+        'nav',
+        {
+          className: 'footer-links',
+          attrs: { 'aria-label': 'Project links' },
+        },
+        [
+          el('a', {
+            className: 'footer-link',
+            text: 'Project',
+            attrs: {
+              href: 'https://github.com/KrychVas/bulls-and-cows',
+              target: '_blank',
+              rel: 'noreferrer noopener',
+            },
+          }),
+          el('a', {
+            className: 'footer-link',
+            text: 'RS School',
+            attrs: {
+              href: 'https://rs.school/',
+              target: '_blank',
+              rel: 'noreferrer noopener',
+            },
+          }),
+        ],
+      ),
     ]),
+
+    el('p', {
+      className: 'footer-note',
+      text: 'Built with pure functions, TypeScript, and TDD.',
+    }),
   ]);
