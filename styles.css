@@ -42,7 +42,7 @@ html[data-theme='dark'] {
 }
 
 html {
-  min-width: 320px;
+  min-width: 280px;
   background: var(--paper);
 }
 
@@ -1428,6 +1428,38 @@ html[data-theme='dark'] .hint-pill.bulls {
 
   .footer-note {
     text-align: left;
+  }
+}
+
+@media (max-width: 400px) {
+  .site-header {
+    gap: 12px;
+  }
+
+  .header-actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+
+  .header-controls {
+    margin-left: auto;
+  }
+
+  .volume-slider {
+    width: 54px;
+  }
+
+  .music-control {
+    padding-right: 8px;
+  }
+
+  .brand-lockup {
+    gap: 10px;
+  }
+
+  .brand-title {
+    font-size: 21px;
   }
 }
 
