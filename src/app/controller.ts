@@ -9,8 +9,16 @@ import type { FeedbackTone, GameViewHandle } from './gameView.js';
 import { createGameView } from './gameView.js';
 import { createFooter, createHeader } from './header.js';
 import { el } from './dom.js';
+import {
+  clampVolume,
+  readTheme,
+  readVolume,
+  saveTheme,
+  saveVolume,
+  type Theme,
+} from './preferences.js';
 import { createSetupView } from './setupView.js';
-import { loadRecords, saveRecords } from './storage.js';
+import { getBrowserStorage, loadRecords, saveRecords } from './storage.js';
 
 type Screen = 'setup' | 'game';
 
@@ -60,7 +68,29 @@ const describeAttempt = (state: GameState): string => {
 };
 
 export const mountApp = (root: HTMLElement): (() => void) => {
-  let state = initialState(loadRecords());
+  const storage = getBrowserStorage();
+  const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+  let theme: Theme = readTheme(storage, prefersDark);
+  let volume = readVolume(storage);
+  let musicPlaying = false;
+  let musicRequestPending = false;
+  let musicPausedByUser = false;
+
+  const audio = new Audio('./assets/muz.mp3');
+  audio.loop = true;
+  audio.preload = 'auto';
+  audio.volume = volume;
+
+  const applyTheme = (): void => {
+    document.documentElement.dataset.theme = theme;
+    document
+      .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'dark' ? '#12110f' : '#f3efe6');
+  };
+
+  applyTheme();
+
+  let state = initialState(loadRecords(storage));
   let timerId: number | null = null;
   let gameView: GameViewHandle | null = null;
 
@@ -112,7 +142,14 @@ export const mountApp = (root: HTMLElement): (() => void) => {
     }
 
     root.replaceChildren(
-      createHeader(),
+      createHeader({
+        theme,
+        musicPlaying,
+        volume,
+        onToggleTheme: handleThemeToggle,
+        onToggleMusic: handleMusicToggle,
+        onVolumeChange: handleVolumeChange,
+      }),
       el('main', { className: 'page' }, [screen, createFooter()]),
     );
 
@@ -120,6 +157,56 @@ export const mountApp = (root: HTMLElement): (() => void) => {
       startTimer();
       gameView?.focusGuess();
     }
+  };
+
+  const startMusic = (): void => {
+    if (musicPausedByUser || musicRequestPending || musicPlaying || !audio.paused) {
+      return;
+    }
+
+    musicPlaying = true;
+    musicRequestPending = true;
+
+    void audio
+      .play()
+      .catch(() => {
+        musicPlaying = false;
+      })
+      .finally(() => {
+        musicRequestPending = false;
+        render();
+      });
+  };
+
+  const handleThemeToggle = (): void => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    applyTheme();
+    saveTheme(theme, storage);
+    render();
+  };
+
+  const handleMusicToggle = (): void => {
+    if (musicRequestPending) {
+      return;
+    }
+
+    if (musicPlaying || !audio.paused) {
+      audio.pause();
+      musicPlaying = false;
+      musicPausedByUser = true;
+      render();
+      return;
+    }
+
+    musicPausedByUser = false;
+    startMusic();
+    render();
+  };
+
+  const handleVolumeChange = (nextVolume: number): void => {
+    volume = clampVolume(nextVolume);
+    audio.volume = volume;
+    saveVolume(volume, storage);
   };
 
   const handleSettingsChange = (settings: GameSettings): void => {
@@ -133,6 +220,7 @@ export const mountApp = (root: HTMLElement): (() => void) => {
   };
 
   const handleStart = (): void => {
+    startMusic();
     const game = startGame(state.settings, Math.random, Date.now());
 
     state = {
@@ -213,7 +301,7 @@ export const mountApp = (root: HTMLElement): (() => void) => {
         const added = addRecord(records, record, 10);
         records = added.records;
         recordRank = added.rank;
-        saveRecords(records);
+        saveRecords(records, storage);
         feedback =
           recordRank === null
             ? 'Solved! This result did not reach the top 10.'
@@ -237,6 +325,7 @@ export const mountApp = (root: HTMLElement): (() => void) => {
 
   return () => {
     stopTimer();
+    audio.pause();
     root.replaceChildren();
   };
 };

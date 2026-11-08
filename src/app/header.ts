@@ -1,7 +1,41 @@
-import { el } from './dom.js';
+import { button, el } from './dom.js';
+import type { Theme } from './preferences.js';
 
-export const createHeader = (): HTMLElement =>
-  el('header', { className: 'site-header' }, [
+export interface HeaderProps {
+  readonly theme: Theme;
+  readonly musicPlaying: boolean;
+  readonly volume: number;
+  readonly onToggleTheme: () => void;
+  readonly onToggleMusic: () => void;
+  readonly onVolumeChange: (volume: number) => void;
+}
+
+export const createHeader = ({
+  theme,
+  musicPlaying,
+  volume,
+  onToggleTheme,
+  onToggleMusic,
+  onVolumeChange,
+}: HeaderProps): HTMLElement => {
+  const volumeSlider = el('input', {
+    className: 'volume-slider',
+    attrs: {
+      type: 'range',
+      min: '0',
+      max: '1',
+      step: '0.05',
+      value: String(volume),
+      'aria-label': 'Background music volume',
+      title: 'Background music volume',
+    },
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    onVolumeChange(Number(volumeSlider.value));
+  });
+
+  return el('header', { className: 'site-header' }, [
     el('div', { className: 'brand-lockup' }, [
       el('span', {
         className: 'brand-mark',
@@ -19,11 +53,45 @@ export const createHeader = (): HTMLElement =>
         ]),
       ]),
     ]),
-    el('p', {
-      className: 'header-note',
-      text: 'Deduce the secret. One digit at a time.',
-    }),
+
+    el('div', { className: 'header-actions' }, [
+      el('p', {
+        className: 'header-note',
+        text: 'Deduce the secret. One digit at a time.',
+      }),
+
+      el('div', { className: 'header-controls' }, [
+        button(theme === 'dark' ? '☀' : '☾', {
+          className: 'icon-button theme-toggle',
+          attrs: {
+            'aria-label': 'Dark theme',
+            'aria-pressed': theme === 'dark' ? 'true' : 'false',
+            title: theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
+          },
+          onClick: onToggleTheme,
+        }),
+
+        el('div', { className: 'music-control' }, [
+          button(musicPlaying ? '❚❚' : '▶', {
+            className: 'icon-button music-toggle',
+            attrs: {
+              'aria-label': 'Background music',
+              'aria-pressed': musicPlaying ? 'true' : 'false',
+              title: musicPlaying ? 'Pause background music' : 'Play background music',
+            },
+            onClick: onToggleMusic,
+          }),
+          el('span', {
+            className: 'music-symbol',
+            text: '♫',
+            attrs: { 'aria-hidden': 'true' },
+          }),
+          volumeSlider,
+        ]),
+      ]),
+    ]),
   ]);
+};
 
 export const createFooter = (year: number = new Date().getFullYear()): HTMLElement =>
   el('footer', { className: 'site-footer' }, [
