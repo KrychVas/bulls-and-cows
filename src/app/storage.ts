@@ -8,7 +8,7 @@ export interface StorageLike {
   setItem(key: string, value: string): void;
 }
 
-const getBrowserStorage = (): StorageLike | null => {
+export const getBrowserStorage = (): StorageLike | null => {
   try {
     return window.localStorage;
   } catch {
