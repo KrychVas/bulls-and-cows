@@ -24,6 +24,9 @@ After GitHub Pages is enabled for the repository:
 - Timer starts when the round starts and stops on a win.
 - General top-10 leaderboard with a visible length/base badge for every record.
 - “New game” returns to settings without a page reload.
+- Optional looping background music with a persistent volume preference.
+- Persistent light/dark theme toggle.
+- Footer with game explanation, project and RS School links, and the current year.
 - No DOM access in the game core; no `innerHTML` or `insertAdjacentHTML` in the UI.
 
 ## Stack
@@ -78,7 +81,9 @@ Open the printed local URL. `index.html` loads `dist/main.js` as a module, so th
 │   ├── app           # DOM rendering and browser adapters
 │   └── main.ts
 ├── tests             # Vitest unit tests, one focused file per core module
+├── assets            # background music
 ├── DESIGN.md         # data structures, algorithms, Big O, clean-code notes
+├── favicon.svg
 ├── index.html
 └── styles.css
 ```

@@ -213,6 +213,12 @@ The constants matter more than the asymptotics here: every core loop is bounded 
 
 `src/app/controller.ts` owns the mutable UI state object, timers, and storage side effects. It calls pure core functions and renders the returned state. `src/app/*View.ts` only builds DOM; it does not decide whether a guess is valid, whether the game is won, or what a record ranks.
 
+### Browser preferences and background audio
+
+`src/app/preferences.ts` contains small pure helpers for reading, validating, and saving the selected theme and music volume. Storage failures degrade to defaults instead of breaking the game. The controller applies the theme to `document.documentElement.dataset.theme` before the first render, updates the `theme-color` meta tag, and persists choices in `localStorage`.
+
+The background track is a single `Audio` instance created outside the render cycle, so moving between the settings screen, the game, and a re-render does not restart the music. Playback starts from a user gesture (`Start round` or the music button), loops, and has a range control that persists its own volume. The UI never uses audio as a source of game state.
+
 ### No unsafe HTML
 
 `src/app/dom.ts` is the only element factory. It uses `document.createElement`, `textContent`, and `append`. Dynamic content never passes through `innerHTML` or `insertAdjacentHTML`. That removes an entire class of injection issues and forces content to be represented as text nodes.
@@ -241,6 +247,7 @@ Coverage by module:
 - `tests/records.test.ts` — ranking, top-10 cap, rank reporting, parsing malformed storage.
 - `tests/format.test.ts` — duration/base formatting edge cases.
 - `tests/storage.test.ts` — persistence adapter with storage errors and corrupted data.
+- `tests/preferences.test.ts` — theme and volume validation, clamping, fallbacks, and storage failures.
 
 The suite uses no browser environment. Core tests exercise plain strings, numbers, arrays, and fake random/storage objects. That is only possible because the core is free of DOM dependencies.
 
