@@ -3,6 +3,9 @@ dist/
 coverage/
 _site/
 .npm-cache/
+.browser-profile/
 .husky/_/
+live-*.png
+app-*.png
 *.log
 .DS_Store
